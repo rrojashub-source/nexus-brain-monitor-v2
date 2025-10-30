@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import QueryInput from '@/components/QueryInput';
@@ -8,7 +8,9 @@ import WorkingMemoryPanel from '@/components/WorkingMemoryPanel';
 import PerformanceMetrics from '@/components/PerformanceMetrics';
 import OrbitalHUD from '@/components/OrbitalHUD';
 import ActivityTimeline from '@/components/ActivityTimeline';
+import EmotionalRadar from '@/components/EmotionalRadar';
 import { useBrainOrchestrator } from '@/hooks/useBrainOrchestrator';
+import { useAudioSystem } from '@/hooks/useAudioSystem';
 
 const BrainModel3D = dynamic(() => import('@/components/BrainModel3D'), {
   ssr: false,
@@ -26,14 +28,53 @@ const BrainModel3D = dynamic(() => import('@/components/BrainModel3D'), {
 export default function Home() {
   const { processQuery, isProcessing, response, error } = useBrainOrchestrator();
   const [activeLabIds, setActiveLabIds] = useState<string[]>([]);
+  const [audioEnabled, setAudioEnabled] = useState(true);
+
+  const {
+    playNeuralPulse,
+    playProcessingStart,
+    playLABActivation,
+    playConnectionSound,
+    playAmbientHum,
+  } = useAudioSystem({ enabled: audioEnabled, volume: 0.3 });
+
+  const handleAudioEvent = useCallback((event: string, data?: any) => {
+    if (!audioEnabled) return;
+
+    switch (event) {
+      case 'labActivation':
+        playLABActivation(data);
+        break;
+      case 'cameraZoom':
+        playNeuralPulse(600, 0.2);
+        break;
+      case 'cameraReset':
+        playNeuralPulse(400, 0.15);
+        break;
+      case 'connection':
+        playConnectionSound();
+        break;
+      default:
+        break;
+    }
+  }, [audioEnabled, playLABActivation, playNeuralPulse, playConnectionSound]);
 
   const handleQuerySubmit = async (query: string, emotion: string, goal: string) => {
     try {
+      if (audioEnabled) {
+        playProcessingStart();
+        setTimeout(() => playAmbientHum(), 200);
+      }
+
       const result = await processQuery(query, emotion, goal);
       
       if (result.interactions) {
         const labIds = result.interactions.map(int => int.to_lab);
         setActiveLabIds(Array.from(new Set(labIds)));
+        
+        if (audioEnabled) {
+          playConnectionSound();
+        }
         
         setTimeout(() => setActiveLabIds([]), 5000);
       }
@@ -47,6 +88,20 @@ export default function Home() {
       <Header />
 
       <main className="container mx-auto px-6 py-8">
+        {/* Control de audio */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setAudioEnabled(!audioEnabled)}
+            className={`px-4 py-2 rounded-lg border transition-all ${
+              audioEnabled
+                ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                : 'bg-red-500/20 border-red-500/50 text-red-400'
+            }`}
+          >
+            {audioEnabled ? '🔊 Audio ON' : '🔇 Audio OFF'}
+          </button>
+        </div>
+
         {error && (
           <div className="bg-gradient-to-r from-red-500/10 to-red-500/5 border border-red-500/50 text-red-400 rounded-lg p-4 mb-6 backdrop-blur-sm animate-shake">
             <div className="flex items-center gap-3">
@@ -65,6 +120,7 @@ export default function Home() {
             <BrainModel3D
               interactions={response?.interactions}
               activeLabIds={activeLabIds}
+              onAudioEvent={handleAudioEvent}
             />
           </div>
 
@@ -93,7 +149,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Sección: Input y Working Memory */}
+        {/* Sección: Input, Working Memory y Radar Emocional */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <div className="lg:col-span-2">
             <QueryInput onSubmit={handleQuerySubmit} isProcessing={isProcessing} />
@@ -105,6 +161,13 @@ export default function Home() {
             />
           </div>
         </div>
+
+        {/* Sección: Radar Emocional */}
+        {response?.emotional_state && (
+          <div className="mb-6">
+            <EmotionalRadar emotionalState={response.emotional_state} />
+          </div>
+        )}
 
         {/* Sección: Future Vision */}
         {response?.future_vision && (

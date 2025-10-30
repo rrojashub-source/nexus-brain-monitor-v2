@@ -8,10 +8,13 @@ import { BlendFunction } from 'postprocessing';
 import * as THREE from 'three';
 import { LAB_COLORS, LAB_INFO } from '@/lib/types';
 import type { LABInteraction } from '@/lib/types';
+import HolographicShader from './HolographicShader';
+import InteractiveCameraControls, { LABControlPanel } from './InteractiveCameraControls';
 
 interface BrainModel3DProps {
   interactions?: LABInteraction[];
   activeLabIds?: string[];
+  onAudioEvent?: (event: string, data?: any) => void;
 }
 
 const LAB_POSITIONS: Record<string, [number, number, number]> = {
@@ -275,10 +278,11 @@ function NeuralConnections({ interactions }: { interactions: LABInteraction[] })
 }
 
 // Cerebro principal mejorado
-function EnhancedBrain({ interactions = [], activeLabIds = [] }: BrainModel3DProps) {
+function EnhancedBrain({ interactions = [], activeLabIds = [], onAudioEvent }: BrainModel3DProps) {
   const brainRef = useRef<THREE.Group>(null);
   const hemisphereLeftRef = useRef<THREE.Mesh>(null);
   const hemisphereRightRef = useRef<THREE.Mesh>(null);
+  const prevActiveLabsRef = useRef<string[]>([]);
 
   useFrame((state) => {
     if (brainRef.current) {
@@ -295,8 +299,22 @@ function EnhancedBrain({ interactions = [], activeLabIds = [] }: BrainModel3DPro
     }
   });
 
+  useEffect(() => {
+    if (activeLabIds.length > prevActiveLabsRef.current.length) {
+      const newLabs = activeLabIds.filter(id => !prevActiveLabsRef.current.includes(id));
+      newLabs.forEach(labId => {
+        const labIndex = Object.keys(LAB_POSITIONS).indexOf(labId);
+        onAudioEvent?.('labActivation', labIndex);
+      });
+    }
+    prevActiveLabsRef.current = activeLabIds;
+  }, [activeLabIds, onAudioEvent]);
+
   return (
     <group ref={brainRef}>
+      {/* Shader Holográfico */}
+      <HolographicShader opacity={0.25} />
+
       {/* Hemisferio izquierdo */}
       <mesh ref={hemisphereLeftRef} position={[-0.3, 0, 0]}>
         <sphereGeometry args={[1.7, 64, 64, 0, Math.PI]} />
@@ -359,7 +377,25 @@ function EnhancedBrain({ interactions = [], activeLabIds = [] }: BrainModel3DPro
 }
 
 // Componente principal
-export default function BrainModel3D({ interactions, activeLabIds }: BrainModel3DProps) {
+export default function BrainModel3D({ interactions, activeLabIds, onAudioEvent }: BrainModel3DProps) {
+  const [cameraTarget, setCameraTarget] = useState<[number, number, number] | undefined>();
+
+  const handleSelectLAB = (position: [number, number, number]) => {
+    const offset = 3;
+    const targetPos: [number, number, number] = [
+      position[0] + offset,
+      position[1] + offset,
+      position[2] + offset
+    ];
+    setCameraTarget(targetPos);
+    onAudioEvent?.('cameraZoom', position);
+  };
+
+  const handleReset = () => {
+    setCameraTarget([0, 0, 6]);
+    onAudioEvent?.('cameraReset');
+  };
+
   return (
     <div className="w-full h-[600px] bg-nexus-darker border border-nexus-gray/20 rounded-lg overflow-hidden relative">
       <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
@@ -376,16 +412,15 @@ export default function BrainModel3D({ interactions, activeLabIds }: BrainModel3
           color="#00d9ff"
         />
         
-        <EnhancedBrain interactions={interactions} activeLabIds={activeLabIds} />
+        <EnhancedBrain 
+          interactions={interactions} 
+          activeLabIds={activeLabIds}
+          onAudioEvent={onAudioEvent}
+        />
         
-        <OrbitControls
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
-          minDistance={3}
-          maxDistance={10}
+        <InteractiveCameraControls
+          targetPosition={cameraTarget}
           autoRotate={activeLabIds && activeLabIds.length === 0}
-          autoRotateSpeed={0.5}
         />
 
         {/* Post-processing effects */}
@@ -417,6 +452,12 @@ export default function BrainModel3D({ interactions, activeLabIds }: BrainModel3
           </div>
         )}
       </div>
+
+      {/* Panel de controles */}
+      <LABControlPanel 
+        onSelectLAB={handleSelectLAB}
+        onReset={handleReset}
+      />
     </div>
   );
 }

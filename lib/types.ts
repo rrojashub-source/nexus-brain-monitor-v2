@@ -13,6 +13,12 @@ export interface WorkingMemoryItem {
   created_at: string;
 }
 
+export interface EmotionalState {
+  current: string;
+  regulated: string;
+  intensity: number;
+}
+
 export interface BrainProcessResponse {
   success: boolean;
   working_memory: WorkingMemoryItem[];
