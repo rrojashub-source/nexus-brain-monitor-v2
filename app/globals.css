@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-nexus-dark text-nexus-white font-sans antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-nexus-darker;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-nexus-gray/50 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-nexus-gray;
+}

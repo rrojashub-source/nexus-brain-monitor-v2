@@ -1,0 +1,35 @@
+{
+  "name": "nexus-brain-monitor-v2",
+  "version": "2.0.0",
+  "description": "Real-time 3D visualization of NEXUS Brain Orchestrator cognitive processing",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 5000 -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start -p 5000 -H 0.0.0.0",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
+    "@types/node": "^24.9.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/three": "^0.180.0",
+    "autoprefixer": "^10.4.21",
+    "axios": "^1.13.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "eslint": "^9.38.0",
+    "eslint-config-next": "^16.0.1",
+    "next": "^16.0.1",
+    "postcss": "^8.5.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "recharts": "^3.3.0",
+    "swr": "^2.3.6",
+    "tailwindcss": "^4.1.16",
+    "three": "^0.180.0",
+    "typescript": "^5.9.3"
+  }
+}
