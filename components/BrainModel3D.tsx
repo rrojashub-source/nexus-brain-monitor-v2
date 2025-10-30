@@ -313,7 +313,7 @@ function EnhancedBrain({ interactions = [], activeLabIds = [], onAudioEvent }: B
   return (
     <group ref={brainRef}>
       {/* Shader Holográfico */}
-      <HolographicShader opacity={0.25} />
+      <HolographicShader opacity={0.15} />
 
       {/* Hemisferio izquierdo */}
       <mesh ref={hemisphereLeftRef} position={[-0.3, 0, 0]}>
@@ -377,7 +377,18 @@ function EnhancedBrain({ interactions = [], activeLabIds = [], onAudioEvent }: B
 }
 
 // Componente principal
-export default function BrainModel3D({ interactions, activeLabIds, onAudioEvent }: BrainModel3DProps) {
+interface BrainModel3DExportedProps extends BrainModel3DProps {
+  onSelectLAB?: (position: [number, number, number]) => void;
+  onResetCamera?: () => void;
+}
+
+export default function BrainModel3D({ 
+  interactions, 
+  activeLabIds, 
+  onAudioEvent,
+  onSelectLAB,
+  onResetCamera 
+}: BrainModel3DExportedProps) {
   const [cameraTarget, setCameraTarget] = useState<[number, number, number] | undefined>();
 
   const handleSelectLAB = (position: [number, number, number]) => {
@@ -389,12 +400,24 @@ export default function BrainModel3D({ interactions, activeLabIds, onAudioEvent 
     ];
     setCameraTarget(targetPos);
     onAudioEvent?.('cameraZoom', position);
+    onSelectLAB?.(position);
   };
 
   const handleReset = () => {
     setCameraTarget([0, 0, 6]);
     onAudioEvent?.('cameraReset');
+    onResetCamera?.();
   };
+
+  // Exponer funciones para uso externo
+  useEffect(() => {
+    if (onSelectLAB) {
+      (window as any).__brainSelectLAB = handleSelectLAB;
+    }
+    if (onResetCamera) {
+      (window as any).__brainResetCamera = handleReset;
+    }
+  }, [onSelectLAB, onResetCamera]);
 
   return (
     <div className="w-full h-[600px] bg-nexus-darker border border-nexus-gray/20 rounded-lg overflow-hidden relative">
@@ -452,12 +475,8 @@ export default function BrainModel3D({ interactions, activeLabIds, onAudioEvent 
           </div>
         )}
       </div>
-
-      {/* Panel de controles */}
-      <LABControlPanel 
-        onSelectLAB={handleSelectLAB}
-        onReset={handleReset}
-      />
     </div>
   );
 }
+
+export { LABControlPanel };

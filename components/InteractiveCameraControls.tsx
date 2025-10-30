@@ -80,7 +80,7 @@ export function LABControlPanel({ onSelectLAB, onReset }: LABControlPanelProps) 
   ];
 
   return (
-    <div className="absolute top-4 right-4 bg-nexus-darker/90 backdrop-blur-sm border border-nexus-primary/30 rounded-lg p-4 max-w-xs">
+    <div className="bg-nexus-darker border border-nexus-primary/30 rounded-lg p-4">
       <h4 className="text-sm font-semibold text-nexus-white mb-3 flex items-center gap-2">
         🎮 Controles de Cámara
       </h4>

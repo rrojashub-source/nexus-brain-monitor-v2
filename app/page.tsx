@@ -9,6 +9,7 @@ import PerformanceMetrics from '@/components/PerformanceMetrics';
 import OrbitalHUD from '@/components/OrbitalHUD';
 import ActivityTimeline from '@/components/ActivityTimeline';
 import EmotionalRadar from '@/components/EmotionalRadar';
+import { LABControlPanel } from '@/components/BrainModel3D';
 import { useBrainOrchestrator } from '@/hooks/useBrainOrchestrator';
 import { useAudioSystem } from '@/hooks/useAudioSystem';
 
@@ -114,7 +115,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Sección principal: Cerebro 3D + Métricas */}
+        {/* Sección principal: Cerebro 3D + Métricas + Controles */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           <div className="lg:col-span-2">
             <BrainModel3D
@@ -124,13 +125,26 @@ export default function Home() {
             />
           </div>
 
-          <div>
+          <div className="space-y-6">
             <PerformanceMetrics
               processingTime={response?.processing_time_ms}
               activeLabs={activeLabIds.length}
               totalLabs={9}
               confidence={response?.metacognition.confidence}
               totalEpisodes={response?.working_memory.length || 0}
+            />
+
+            <LABControlPanel 
+              onSelectLAB={(position) => {
+                if ((window as any).__brainSelectLAB) {
+                  (window as any).__brainSelectLAB(position);
+                }
+              }}
+              onReset={() => {
+                if ((window as any).__brainResetCamera) {
+                  (window as any).__brainResetCamera();
+                }
+              }}
             />
           </div>
         </div>
