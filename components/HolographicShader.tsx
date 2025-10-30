@@ -63,10 +63,10 @@ export default function HolographicShader({ opacity = 0.3 }: HolographicShaderPr
 
   const uniforms = {
     time: { value: 0 },
-    color1: { value: new THREE.Color('#004466') },
-    color2: { value: new THREE.Color('#1a1a3e') },
-    color3: { value: new THREE.Color('#002244') },
-    opacity: { value: opacity * 0.3 },
+    color1: { value: new THREE.Color('#001122') },
+    color2: { value: new THREE.Color('#0a0e27') },
+    color3: { value: new THREE.Color('#000a15') },
+    opacity: { value: opacity * 0.15 },
   };
 
   return (

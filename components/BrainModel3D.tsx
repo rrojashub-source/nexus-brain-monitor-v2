@@ -312,20 +312,20 @@ function EnhancedBrain({ interactions = [], activeLabIds = [], onAudioEvent }: B
 
   return (
     <group ref={brainRef}>
-      {/* Shader Holográfico */}
-      <HolographicShader opacity={0.15} />
+      {/* Shader Holográfico sutil */}
+      <HolographicShader opacity={0.08} />
 
       {/* Hemisferio izquierdo */}
       <mesh ref={hemisphereLeftRef} position={[-0.3, 0, 0]}>
         <sphereGeometry args={[1.7, 64, 64, 0, Math.PI]} />
         <MeshDistortMaterial
-          color="#1a1a3e"
+          color="#2a2a4e"
           transparent
-          opacity={0.15}
-          distort={0.2}
-          speed={1}
-          roughness={0.8}
-          metalness={0.2}
+          opacity={0.25}
+          distort={0.3}
+          speed={0.5}
+          roughness={0.6}
+          metalness={0.1}
         />
       </mesh>
 
@@ -333,23 +333,23 @@ function EnhancedBrain({ interactions = [], activeLabIds = [], onAudioEvent }: B
       <mesh ref={hemisphereRightRef} position={[0.3, 0, 0]} rotation={[0, Math.PI, 0]}>
         <sphereGeometry args={[1.7, 64, 64, 0, Math.PI]} />
         <MeshDistortMaterial
-          color="#1a1a3e"
+          color="#2a2a4e"
           transparent
-          opacity={0.15}
-          distort={0.2}
-          speed={1}
-          roughness={0.8}
-          metalness={0.2}
+          opacity={0.25}
+          distort={0.3}
+          speed={0.5}
+          roughness={0.6}
+          metalness={0.1}
         />
       </mesh>
 
-      {/* Red neuronal wireframe */}
+      {/* Red neuronal wireframe más sutil */}
       <mesh>
         <sphereGeometry args={[2, 32, 32]} />
         <meshBasicMaterial
-          color="#00d9ff"
+          color="#004466"
           transparent
-          opacity={0.08}
+          opacity={0.12}
           wireframe
         />
       </mesh>
