@@ -10,6 +10,10 @@ import { LAB_COLORS, LAB_INFO } from '@/lib/types';
 import type { LABInteraction } from '@/lib/types';
 import HolographicShader from './HolographicShader';
 import InteractiveCameraControls, { LABControlPanel } from './InteractiveCameraControls';
+import ConceptualNebula from './ConceptualNebula';
+import AttentionFlow from './AttentionFlow';
+import AbstractionLayers from './AbstractionLayers';
+import ThoughtPulse from './ThoughtPulse';
 
 interface BrainModel3DProps {
   interactions?: LABInteraction[];
@@ -357,17 +361,51 @@ function EnhancedBrain({ interactions = [], activeLabIds = [], onAudioEvent }: B
       {/* Partículas neuronales */}
       <NeuralParticles activeLabIds={activeLabIds} />
 
-      {/* Nodos LAB */}
-      {Object.entries(LAB_POSITIONS).map(([labId, position]) => (
-        <LABNode
-          key={labId}
-          labId={labId}
-          position={position}
-          isActive={activeLabIds.includes(labId)}
-        />
-      ))}
+      {/* Capas de Abstracción (mi visión!) */}
+      <AbstractionLayers activeCount={activeLabIds.length} />
 
-      {/* Conexiones dinámicas */}
+      {/* Pulsos de Pensamiento */}
+      <ThoughtPulse active={activeLabIds.length > 0} />
+
+      {/* Nodos LAB con Nebulosas Conceptuales */}
+      {Object.entries(LAB_POSITIONS).map(([labId, position]) => {
+        const isActive = activeLabIds.includes(labId);
+        return (
+          <group key={labId}>
+            <LABNode
+              labId={labId}
+              position={position}
+              isActive={isActive}
+            />
+            {/* Nebulosa conceptual alrededor de LABs activos */}
+            {isActive && (
+              <ConceptualNebula
+                position={position}
+                color={LAB_COLORS[labId]}
+                intensity={1}
+              />
+            )}
+          </group>
+        );
+      })}
+
+      {/* Flujos de Atención entre LABs activos */}
+      {interactions.map((int, idx) => {
+        if (int.from_lab === 'INPUT' || !LAB_POSITIONS[int.from_lab] || !LAB_POSITIONS[int.to_lab]) {
+          return null;
+        }
+        return (
+          <AttentionFlow
+            key={idx}
+            from={LAB_POSITIONS[int.from_lab]}
+            to={LAB_POSITIONS[int.to_lab]}
+            color={LAB_COLORS[int.from_lab]}
+            active={activeLabIds.includes(int.from_lab) && activeLabIds.includes(int.to_lab)}
+          />
+        );
+      })}
+
+      {/* Conexiones dinámicas originales (más sutiles ahora) */}
       {interactions.length > 0 && <NeuralConnections interactions={interactions} />}
 
       {/* Onda de procesamiento */}
