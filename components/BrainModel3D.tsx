@@ -319,31 +319,59 @@ function EnhancedBrain({ interactions = [], activeLabIds = [], onAudioEvent }: B
       {/* Shader Holográfico sutil */}
       <HolographicShader opacity={0.08} />
 
-      {/* Hemisferio izquierdo */}
-      <mesh ref={hemisphereLeftRef} position={[-0.3, 0, 0]}>
+      {/* Hemisferio izquierdo - Forma orgánica asimétrica */}
+      <mesh ref={hemisphereLeftRef} position={[-0.4, 0.1, 0]} scale={[1.05, 0.95, 1.1]}>
         <sphereGeometry args={[1.7, 64, 64, 0, Math.PI]} />
         <MeshDistortMaterial
           color="#2a2a4e"
           transparent
-          opacity={0.25}
-          distort={0.3}
-          speed={0.5}
-          roughness={0.6}
-          metalness={0.1}
+          opacity={0.3}
+          distort={0.4}
+          speed={0.6}
+          roughness={0.5}
+          metalness={0.15}
         />
       </mesh>
 
-      {/* Hemisferio derecho */}
-      <mesh ref={hemisphereRightRef} position={[0.3, 0, 0]} rotation={[0, Math.PI, 0]}>
+      {/* Capa interna izquierda - Profundidad */}
+      <mesh position={[-0.4, 0.1, 0]} scale={[0.95, 0.9, 1.0]}>
+        <sphereGeometry args={[1.5, 48, 48, 0, Math.PI]} />
+        <MeshDistortMaterial
+          color="#1a1a3e"
+          transparent
+          opacity={0.15}
+          distort={0.5}
+          speed={0.4}
+          roughness={0.7}
+          metalness={0.05}
+        />
+      </mesh>
+
+      {/* Hemisferio derecho - Forma orgánica asimétrica */}
+      <mesh ref={hemisphereRightRef} position={[0.4, -0.05, 0.05]} rotation={[0, Math.PI, 0]} scale={[1.0, 1.05, 0.95]}>
         <sphereGeometry args={[1.7, 64, 64, 0, Math.PI]} />
         <MeshDistortMaterial
           color="#2a2a4e"
           transparent
-          opacity={0.25}
-          distort={0.3}
-          speed={0.5}
-          roughness={0.6}
-          metalness={0.1}
+          opacity={0.3}
+          distort={0.4}
+          speed={0.6}
+          roughness={0.5}
+          metalness={0.15}
+        />
+      </mesh>
+
+      {/* Capa interna derecha - Profundidad */}
+      <mesh position={[0.4, -0.05, 0.05]} rotation={[0, Math.PI, 0]} scale={[0.9, 1.0, 0.9]}>
+        <sphereGeometry args={[1.5, 48, 48, 0, Math.PI]} />
+        <MeshDistortMaterial
+          color="#1a1a3e"
+          transparent
+          opacity={0.15}
+          distort={0.5}
+          speed={0.4}
+          roughness={0.7}
+          metalness={0.05}
         />
       </mesh>
 
